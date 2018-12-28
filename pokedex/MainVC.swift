@@ -9,7 +9,7 @@
 import UIKit
 import AVFoundation
 
-class ViewController: UIViewController,UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout,UISearchBarDelegate {
+class MainVC: UIViewController,UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout,UISearchBarDelegate {
     
     var musicPlayer : AVAudioPlayer!
     
@@ -34,7 +34,7 @@ class ViewController: UIViewController,UICollectionViewDelegate,UICollectionView
     }
     
     func initAudio(){
-     let path = Bundle.main.path(forResource: "music", ofType: "mp3")!
+        let path = Bundle.main.path(forResource: "music", ofType: "mp3")!
         do {
             musicPlayer = try AVAudioPlayer(contentsOf: URL(string : path)!)
             musicPlayer.pause()
@@ -53,10 +53,10 @@ class ViewController: UIViewController,UICollectionViewDelegate,UICollectionView
         initAudio()
         parsePokemonCSV()
         searchBar.returnKeyType = UIReturnKeyType.done
-    
+        
         // Do any additional setup after loading the view, typically from a nib.
     }
-
+    
     func parsePokemonCSV(){
         let path = Bundle.main.path(forResource: "pokemon", ofType: "csv")
         
@@ -78,7 +78,16 @@ class ViewController: UIViewController,UICollectionViewDelegate,UICollectionView
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
+        if(searchMode){
+            performSegue(withIdentifier: "PokeDetail", sender: filteredPokemon[indexPath.row])
+        }else{
+            performSegue(withIdentifier: "PokeDetail", sender: pokemonList[indexPath.row])
+        }
+        
+        
     }
+    
+    
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
@@ -127,6 +136,19 @@ class ViewController: UIViewController,UICollectionViewDelegate,UICollectionView
         
         
     }
-
+    
+    
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "PokeDetail"{
+            if let destination = segue.destination as? PokeDetailVC {
+                if let poke = sender as? Pokemon{
+                    destination.pokeDetail = poke
+                    
+                }
+            }
+        }
+    }
+    
 }
 
